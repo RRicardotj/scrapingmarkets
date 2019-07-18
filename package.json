@@ -1,0 +1,17 @@
+{
+  "name": "nodejsscraping",
+  "version": "1.0.0",
+  "description": "Nodejs scraping practice",
+  "main": "index.js",
+  "author": "RRicardotj.com",
+  "license": "MIT",
+  "scripts": {
+    "scrap-dia": "node scraping/dia/index.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "moment": "^2.24.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  }
+}
