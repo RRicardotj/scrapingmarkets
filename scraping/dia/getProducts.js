@@ -9,8 +9,14 @@ module.exports = async (productsUrl) => {
   const response = await request(productsUrl);
   let $ = cheerio.load(response);
 
-  const productsContainer = $('div[class="span-16 last"]').html();
+  // const productsContainer = $('div[class="span-16 last"]').html();
+  const productsContainer = $('div[class="span-16 last"] > div').each((i, element) => {
+    if (i === 16) {
+      console.log($(element).html());
+    }
+  });
 
+/*
   const productsContainer$ = cheerio.load(productsContainer);
   const divs = productsContainer$('div[class^="span-3"]').html();
 
@@ -35,6 +41,7 @@ module.exports = async (productsUrl) => {
       }
     }
   });
+*/
   // console.log("#######################");
 
   // console.log(productsContainer);
