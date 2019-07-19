@@ -4,45 +4,27 @@ const cheerio = require('cheerio');
 
 // $('div[class="span-16 last"] > *')
 
+const getUniqueProduct = (html) => {
+  let $ = cheerio.load(html);
+
+  const title = $('a[class="productMainLink"]').attr('title').trim();
+  const atag$ = cheerio.load($('a[class="productMainLink"]').html());
+  const imgUrl = atag$('span[class="thumb"] > img').attr('data-original');
+  const price = $('p[class="price"]').text().trim();
+  const pricePerUnit = $('p[class="pricePerKilogram"]').text().trim();
+  
+  return { title, price, pricePerUnit, imgUrl };
+};
+
 module.exports = async (productsUrl) => {
-  console.log(productsUrl);
   const response = await request(productsUrl);
   let $ = cheerio.load(response);
 
-  // const productsContainer = $('div[class="span-16 last"]').html();
-  const productsContainer = $('div[class="span-16 last"] > div').each((i, element) => {
-    if (i === 16) {
-      console.log($(element).html());
-    }
-  });
-
-/*
-  const productsContainer$ = cheerio.load(productsContainer);
-  const divs = productsContainer$('div[class^="span-3"]').html();
-
-  let items = productsContainer.split('\n');
-
+  // const productsContainer = $('div[class="span-16 last"]').html();\
   const products = [];
-
-  let product;
-  items.forEach((e) => {
-    e = e.trim();
-    if (e && e !== '') {
-      const valueTag = e.replace(/(\s+)/g, '');
-      console.log(valueTag);
-      // console.log(e);
-      if (e.substr(0, 21) === '<div class="prod_grid'){
-        product = {};
-        // console.log(e);
-      }
-
-      if (product) {
-
-      }
-    }
+  $('div[class="span-16 last"] > div').each((i, element) => {
+    products.push(getUniqueProduct(element));
   });
-*/
-  // console.log("#######################");
 
-  // console.log(productsContainer);
+  return products;
 };

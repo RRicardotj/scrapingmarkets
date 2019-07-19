@@ -13,10 +13,8 @@ module.exports = async (categories) => {
 
         const products = await getProducts(productUrl);
 
-        break;
+        productType.products = products;
       }
-      break;
     }
-    break;
   }
 };
