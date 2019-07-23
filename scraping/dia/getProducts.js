@@ -17,14 +17,18 @@ const getUniqueProduct = (html) => {
 };
 
 module.exports = async (productsUrl) => {
-  const response = await request(productsUrl);
-  let $ = cheerio.load(response);
+  try {
+    const response = await request(productsUrl);
+    let $ = cheerio.load(response, { decodeEntities: false });
 
-  // const productsContainer = $('div[class="span-16 last"]').html();\
-  const products = [];
-  $('div[class="span-16 last"] > div').each((i, element) => {
-    products.push(getUniqueProduct(element));
-  });
+    // const productsContainer = $('div[class="span-16 last"]').html();\
+    const products = [];
+    $('div[class="span-16 last"] > div').each((i, element) => {
+      products.push(getUniqueProduct(element));
+    });
 
-  return products;
+    return products;
+  } catch (error) {
+    throw error;
+  }
 };

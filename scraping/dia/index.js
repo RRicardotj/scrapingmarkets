@@ -16,7 +16,7 @@ const URL = 'https://www.dia.es/compra-online/#';
 // https://www.dia.es/compra-online/productos/frescos/carne-y-aves/salchichas-chorizo-morcilla/c/WEB.001.001.00011?q=%3Arelevance%3Acategory%3AWEB.001.001.00000&sort=name-asc&show=all
 // ?sort=name-asc&q=%3Arelevance&show=All#
 
-const getCategoryUrl = (valueTag) => {
+const getCategoryUrl = (valueTag, e) => {
   const openQuote = 8;
   const closeQuote = valueTag.substr(8, valueTag.length - 1).indexOf('"');
   return valueTag.substr(openQuote, closeQuote);
@@ -48,19 +48,41 @@ const scrap = async () => {
     
     const response = await request(URL);
 
-    const $ = cheerio.load(response);
+    const $ = cheerio.load(response, { decodeEntities: false });
 
     const nav = $('div[class="navigation-container"]').html();
-    const nav$ = cheerio.load(nav);
+    const nav$ = cheerio.load(nav, { decodeEntities: false });
 
     const ul = nav$('ul[id="nav-submenu-container"]').html();
+/*
+    nav$('ul[id="nav-submenu-container"] > li').each((i, element) => {
+      // console.log(i);
+      // if (i === 0) {
+        const liElement$ = cheerio.load(element, { decodeEntities: false });
+        const a = liElement$('li > a').attr('href');
+// /compra-online/productos
+        if (a && a.substr(0, 24) === '/compra-online/productos') {
+          liElement$('ul > li').each((j, subElement) => {
+            const subLiElement$ = cheerio.load(subElement, { decodeEntities: false });
+            // const categoryUrl = subLiElement$('a').attr('href');
+            const categoryTitle = subLiElement$('a').text().trim();
+
+            console.log(categoryUrl);
+            console.log(categoryTitle);
+          });
+        }
+      // }
+    });
+*/
     let items = ul.split('\n');
 
+
     items.forEach((e) => {
-        if (e) {
+      e = e.trim();
+        if (e && e !== '') {
             const valueTag = e.replace(/(\s+)/g, '');
             if (valueTag.substr(0, 6) === '<ahref') {
-              const categoryUrl = getCategoryUrl(valueTag);
+              const categoryUrl = getCategoryUrl(valueTag, e);
               
               const urlParts = categoryUrl.split('/').filter(part => (part !== ''));
 
@@ -96,13 +118,18 @@ const scrap = async () => {
     dates = JSON.parse(dates);
 
     dates.dates.push(date);
-    // fs.writeFileSync(path.resolve(`${diaPath}/${date}.json`), JSON.stringify(categories));
-    // fs.writeFileSync(path.resolve(`${diaPath}/index.json`), JSON.stringify(dates));
-
     await searchProduct(categories);
+    fs.writeFileSync(path.resolve(`${diaPath}/${date}.json`), JSON.stringify(categories));
+    fs.writeFileSync(path.resolve(`${diaPath}/index.json`), JSON.stringify(dates));
+
   } catch (error) {
     throw error;
   }
 };
 
-scrap().catch((err) => { console.log(err); });
+scrap().catch((err) => {
+  console.log('Ocurrio un error');
+  const log = moment().format('YYYYMMDDHHmmss');
+  console.log('Vea el log', log);
+  fs.writeFileSync(path.resolve(`${__dirname}/errorLogs/${log}.txt`), err);
+});
