@@ -6,12 +6,21 @@
   "author": "RRicardotj.com",
   "license": "MIT",
   "scripts": {
+    "start": "nodemon index.js",
     "scrap-dia": "node scraping/dia/index.js"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^14.4.2",
     "moment": "^2.24.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
   }
 }
